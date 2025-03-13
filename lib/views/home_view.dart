@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:todo_getx/controllers/auth_controllers.dart';
 import 'package:todo_getx/controllers/todo_controller.dart';
 import 'package:todo_getx/models/todo_model.dart';
 import 'package:todo_getx/views/add_todo_view.dart';
@@ -9,7 +10,7 @@ class HomeView extends StatelessWidget {
   HomeView({super.key});
 
   TodoController todoController = Get.put(TodoController());
-
+  AuthController authController = Get.put(AuthController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,10 +21,14 @@ class HomeView extends StatelessWidget {
         ),
         backgroundColor: Colors.green,
         centerTitle: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
-        ),
-        elevation: 0,
+        actions: [
+          IconButton(
+              icon: Icon(Icons.logout),
+              onPressed: () {
+                todoController.clearTodo();
+                authController.logout();
+              })
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),

@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:todo_getx/controllers/auth_controllers.dart';
 import 'package:todo_getx/services/storage_services.dart';
 
 import '../models/todo_model.dart';
@@ -6,6 +7,7 @@ import '../models/todo_model.dart';
 class TodoController extends GetxController {
   var todoList = <TodoModel>[].obs;
   StorageService storageService = StorageService();
+  AuthController authController = Get.put(AuthController());
 
   @override
   void onInit() {
@@ -13,8 +15,11 @@ class TodoController extends GetxController {
     fetchTodos();
   }
 
-  void fetchTodos() {
-    var todos = storageService.read('todolist');
+  void fetchTodos() async {
+    var todos = await storageService.read(
+      'todoList',
+      authController.user.value?.uid ?? '',
+    );
     if (todos != null) {
       todoList.value = List<TodoModel>.from(
         todos.map((x) => TodoModel.fromJson(x)),
@@ -23,8 +28,14 @@ class TodoController extends GetxController {
   }
 
   void addTodo(String title, String subtitle) {
-    todoList.add(TodoModel(title, subtitle, false));
-    storageService.write("todolist", todoList.toJson());
+    TodoModel todo = TodoModel(
+      title,
+      subtitle,
+      false,
+      uid: authController.user.value?.uid,
+    );
+    todoList.add(todo);
+    storageService.write('todoList', todo.toJson());
   }
 
   void toggleTodo(int index) {
@@ -34,5 +45,9 @@ class TodoController extends GetxController {
 
   void deleteTodo(int index) {
     todoList.removeAt(index);
+  }
+
+  void clearTodo() {
+    todoList.clear();
   }
 }
