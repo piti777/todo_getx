@@ -1,14 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_getx/controllers/todo_controller.dart';
+import 'package:todo_getx/models/todo_model.dart';
 
 // ignore: must_be_immutable
-class AddTodoView extends StatelessWidget {
-  AddTodoView({super.key});
+class AddTodoView extends StatefulWidget {
+  AddTodoView({super.key, this.todo});
+  TodoModel? todo;
 
+  @override
+  State<AddTodoView> createState() => _AddTodoViewState();
+}
+
+class _AddTodoViewState extends State<AddTodoView> {
   TodoController todoController = Get.put(TodoController());
+
   TextEditingController titleController = TextEditingController();
+
   TextEditingController subtitleController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.todo != null) {
+      titleController.text = widget.todo!.title;
+      subtitleController.text = widget.todo!.subtitle;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +41,7 @@ class AddTodoView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            Text(widget.todo != null ? "แก้ไข" : "เพิ่ม"),
             Text("ชื่อรายการ", style: TextStyle(fontSize: 18)),
             SizedBox(height: 10),
             TextField(
@@ -47,10 +66,14 @@ class AddTodoView extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 if (titleController.text.isEmpty) return;
-                todoController.addTodo(
-                  titleController.text,
-                  subtitleController.text,
-                );
+                if (widget.todo != null) {
+                  widget.todo!.title = titleController.text;
+                  widget.todo!.title = subtitleController.text;
+                  todoController.updataTodo(widget.todo!);
+                } else {
+                  todoController.addTodo(
+                      titleController.text, subtitleController.text);
+                }
                 Get.back();
                 Get.snackbar(
                   "แจ้งเตือน",

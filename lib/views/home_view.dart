@@ -6,11 +6,18 @@ import 'package:todo_getx/models/todo_model.dart';
 import 'package:todo_getx/views/add_todo_view.dart';
 
 // ignore: must_be_immutable
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
   HomeView({super.key});
 
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
   TodoController todoController = Get.put(TodoController());
+
   AuthController authController = Get.put(AuthController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,13 +78,16 @@ class HomeView extends StatelessWidget {
                         ),
                         trailing: IconButton(
                           onPressed: () {
-                            todoController.deleteTodo(index);
+                            todoController.deleteTodo(todo.docId ?? '');
                           },
                           icon: const Icon(
                             Icons.delete,
                             color: Colors.red,
                           ),
                         ),
+                        onTap: () {
+                          Get.to(AddTodoView(todo: todo));
+                        },
                       ),
                     );
                   },
